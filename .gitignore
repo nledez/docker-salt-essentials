@@ -1,0 +1,3 @@
+apt-cacher-cache/*
+.ropeproject
+debian-patch/etc/apt/apt.conf.d/02proxy

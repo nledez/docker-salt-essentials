@@ -1,0 +1,34 @@
+apt_data:
+  container_name: apt_data
+  image: alpine
+  volumes:
+    - ./apt-cacher-cache:/var/cache/apt-cacher-ng
+  command: /bin/true
+apt-cacher:
+  build: .
+  dockerfile: Dockerfile-apt-cacher
+  ports:
+    - "3142:3142"
+  volumes_from:
+    - apt_data
+salt_data:
+  container_name: salt_data
+  image: alpine
+  volumes:
+    - ./salt-srv:/srv
+  command: /bin/true
+salt-master:
+  build: .
+  dockerfile: Dockerfile-saltmaster
+  hostname: salt
+  ports:
+    - "4505:4505"
+    - "4506:4506"
+  volumes_from:
+    - salt_data
+salt-minion:
+  build: .
+  dockerfile: Dockerfile-saltminion
+  links:
+    - salt-master:salt
+    - apt-cacher

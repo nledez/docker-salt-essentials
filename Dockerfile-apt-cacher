@@ -1,0 +1,14 @@
+FROM debian:jessie
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# install_tools
+RUN apt-get --quiet --quiet update && apt-get --assume-yes upgrade
+
+RUN apt-get --quiet --quiet install curl
+
+RUN apt-get --quiet --quiet install apt-cacher-ng
+
+EXPOSE 3142
+
+CMD /usr/sbin/apt-cacher-ng -c /etc/apt-cacher-ng SocketPath=/var/run/apt-cacher-ng/socket foreground=1

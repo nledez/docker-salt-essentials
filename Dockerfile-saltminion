@@ -1,0 +1,20 @@
+FROM debian:jessie
+
+ENV DEBIAN_FRONTEND noninteractive
+ADD debian-patch/etc /etc
+
+# install_tools
+RUN apt-get --quiet --quiet update && apt-get --assume-yes upgrade
+
+RUN apt-get --quiet --quiet install curl vim-nox
+COPY vim-patch/vimrc.tgz /root/
+RUN cd /root && tar xzf /root/vimrc.tgz && rm /root/vimrc.tgz
+
+RUN curl https://repo.saltstack.com/apt/debian/8/amd64/latest/SALTSTACK-GPG-KEY.pub | apt-key add -
+
+RUN echo 'deb http://repo.saltstack.com/apt/debian/8/amd64/latest jessie main' > /etc/apt/sources.list.d/salt.list
+
+RUN apt-get --quiet --quiet update && apt-get --assume-yes upgrade
+RUN apt-get --quiet --quiet install salt-minion
+
+CMD echo $SALT_NAME | sed -r 's%.*_([0-9]+)/.*%minion\1.example%' >> /etc/salt/minion_id ; /usr/bin/salt-minion --log-level=info
